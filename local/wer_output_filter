@@ -1,0 +1,4 @@
+#!/bin/sed -f
+s:\[noise\]::g
+s:\[sil\]::g
+s:<unk>::g

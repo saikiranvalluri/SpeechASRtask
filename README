@@ -1,0 +1,8 @@
+The main script to run the ASR training and tests is run.sh
+
+Please set the KALDI_PATH in path.sh to a pre-installed latest kaldi checkout rootpath.
+SRILM is to be installed in tools/
+steps and utils are softlinks to be made to KALDI_PATH/egs/wsj/s5/{steps,utils}
+
+cmd.sh is customized for training on isolated servers (Non-grid)
+The nnet training script towards the bottom of run.sh is recommeded to be run on CUDA-ENABLED GPU. Kaldi also to be configured to use CUDA LIBS.
