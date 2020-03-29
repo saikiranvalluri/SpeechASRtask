@@ -6,6 +6,7 @@
 
 train_stage=-10
 use_gpu=true
+expdir=exp
 
 . ./cmd.sh
 . ./path.sh
@@ -22,15 +23,15 @@ EOF
   fi
   parallel_opts="--gpu 1"
   num_threads=1
-  minibatch_size=512
-  dir=exp/nnet4d_gpu
+  minibatch_size=128
+  dir=$expdir/nnet4d_gpu
 else
   # Use 4 nnet jobs just like run_4d_gpu.sh so the results should be
   # almost the same, but this may be a little bit slow.
   num_threads=16
   minibatch_size=128
   parallel_opts="--num-threads $num_threads"
-  dir=exp/nnet4d
+  dir=$expdir/nnet4d
 fi
 
 
@@ -40,24 +41,24 @@ if [ ! -f $dir/final.mdl ]; then
      --num-threads "$num_threads" \
      --minibatch-size "$minibatch_size" \
      --parallel-opts "$parallel_opts" \
-     --num-jobs-nnet 4 \
-     --num-epochs 8 --num-epochs-extra 5 --add-layers-period 1 \
+     --num-jobs-nnet 1 \
+     --num-epochs 10 --num-epochs-extra 5 --add-layers-period 1 \
      --num-hidden-layers 2 \
      --mix-up 4000 \
      --initial-learning-rate 0.02 --final-learning-rate 0.004 \
      --cmd "$decode_cmd" \
      --pnorm-input-dim 1000 \
      --pnorm-output-dim 200 \
-     data/train data/lang exp/tri4a_ali $dir  || exit 1;
+     data/train data/lang $expdir/tri4a_ali $dir  || exit 1;
 fi
 
-steps/nnet2/decode.sh --config conf/decode.config --cmd "$decode_cmd" --nj 20 \
-  --transform-dir exp/tri4a/decode \
-  exp/tri4a/graph data/test $dir/decode  &
+steps/nnet2/decode.sh --config conf/decode.config --cmd "$decode_cmd" --nj 2 \
+  --transform-dir $expdir/tri4a/decode_dev \
+  $expdir/tri4a/graph data/dev $dir/decode_dev  &
 
-steps/nnet2/decode.sh --config conf/decode.config --cmd "$decode_cmd" --nj 20 \
-  --transform-dir exp/tri4a/decode_bg \
-  exp/tri4a/graph_bg data/test $dir/decode_bg
+steps/nnet2/decode.sh --config conf/decode.config --cmd "$decode_cmd" --nj 2 \
+  --transform-dir $expdir/tri4a/decode_dev_bg \
+  $expdir/tri4a/graph_bg data/dev $dir/decode_dev_bg
 
 wait
 
