@@ -90,7 +90,7 @@ if [ $stage -le 3 ]; then
    )&
 
   steps/train_deltas.sh --cmd "$train_cmd" \
-    2000 15000 data/train data/lang $expdir/mono0a_ali $expdir/tri2 || exit 1;
+    1800 9000 data/train data/lang $expdir/mono0a_ali $expdir/tri2 || exit 1;
 
   (
     utils/mkgraph.sh data/lang_test $expdir/tri2 $expdir/tri2/graph || exit 1;
@@ -106,7 +106,7 @@ if [ $stage -le 4 ]; then
 # Train tri3a, which is LDA+MLLT, on 100k data.
   steps/train_lda_mllt.sh --cmd "$train_cmd" \
    --splice-opts "--left-context=3 --right-context=3" \
-   2500 25000 data/train data/lang $expdir/tri2_ali $expdir/tri3a || exit 1;
+   1800 9000 data/train data/lang $expdir/tri2_ali $expdir/tri3a || exit 1;
   (
     utils/mkgraph.sh data/lang_test $expdir/tri3a $expdir/tri3a/graph || exit 1;
     steps/decode.sh --nj 2 --cmd "$decode_cmd" --config conf/decode.config \
@@ -121,7 +121,7 @@ if [ $stage -le 5 ]; then
     data/train data/lang $expdir/tri3a $expdir/tri3a_ali || exit 1;
 
   steps/train_sat.sh  --cmd "$train_cmd" \
-    3500 40000 data/train data/lang $expdir/tri3a_ali  $expdir/tri4a || exit 1;
+    1800 9000 data/train data/lang $expdir/tri3a_ali  $expdir/tri4a || exit 1;
 
   (
     utils/mkgraph.sh data/lang_test $expdir/tri4a $expdir/tri4a/graph
@@ -135,7 +135,7 @@ if [ $stage -le 5 ]; then
 fi
 
 if [ $stage -le 6 ]; then
-    local/nnet/run_dnn.sh --stage $stage --train-stage $train_stage || exit 1;
+    local/nnet2/run_dnn.sh --train-stage $train_stage || exit 1;
 fi
 
 exit 0;
