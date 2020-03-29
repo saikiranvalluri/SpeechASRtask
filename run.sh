@@ -72,8 +72,8 @@ if [ $stage -le 2 ]; then
   for f in train dev test ; do
     steps/make_mfcc.sh --nj 20 --cmd "$train_cmd" data/$f $expdir/make_mfcc/$f $mfccdir || exit 1;
     steps/compute_cmvn_stats.sh data/$f $expdir/make_mfcc/$f $mfccdir
+    utils/fix_data_dir.sh data/$f
   done
-  utils/fix_data_dir.sh data/train
 fi
 
 if [ $stage -le 3 ]; then
