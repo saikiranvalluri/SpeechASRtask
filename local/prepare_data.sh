@@ -14,6 +14,9 @@ if [ $# -eq 0 ]; then
   exit 1;
 fi
 
+cat $srcdatabase/trans/spontaneous/*/*/*/*.txt > data/train_LM_init.txt
+cut -f 2- -d " " $srcdatabase/trans/scripted/script.map | sed "s:\"::g" >> data/train_LM_init.txt
 python local/prepare_data_corpus.py $srcdatabase/speech $splitsfilepath $srcdatabase/trans $outputpath
+python local/prepare_LMdata.py data/train_LM_init.txt data/train_LM.txt
 
 exit 0;

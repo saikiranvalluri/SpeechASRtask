@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Copyright 2020 
-# E2E recipe for Children's speech samples ASR
+# E2E recipe for Children's speech ASR
 
 # %WER 30.89 [ 118 / 382, 15 ins, 41 del, 62 sub ] exp_300pdfs/mono0a/decode_dev/wer_17_1.0
 # %WER 97.91 [ 374 / 382, 4 ins, 234 del, 136 sub ] exp_300pdfs/nnet4d_gpu/decode_dev/wer_10_0.0
@@ -43,12 +43,7 @@ if [ $stage -le 1 ]; then
   g2p_tmp_dir=data/local/g2p
   mkdir -p $g2p_tmp_dir
 
-  # awk command from http://stackoverflow.com/questions/2626274/print-all-but-the-first-three-columns
-  cat data/train/text | \
-    local/count_oovs.pl $lexicon | \
-    cut -f 4- -d " " | \
-    perl -ape 's/\s/\n/g;' | \
-  sed "/^[[:space:]]*$/d" |sort | uniq > $g2p_tmp_dir/missing.txt
+  python local/count_oovs.py data/train_LM.txt $lexicon $g2p_tmp_dir/missing.txt
   cat $g2p_tmp_dir/missing.txt | \
     grep "^[a-zA-Z'-]*$" | grep "[a-zA-Z]" > $g2p_tmp_dir/missing_onlywords.txt
 
@@ -65,7 +60,7 @@ fi
 if [ $stage -le 2 ]; then  
   utils/prepare_lang.sh data/local/dict "<unk>" data/local/lang data/lang
   mkdir -p data/local/lm
-  cut -f 2- -d " " data/train/text | sed "s:\[noise\]::g" | \
+  cat data/train_LM.txt | sed "s:\[noise\]::g" | \
 	  sed "s:\[sil\]::g" | sed "s:<unk>::g" > data/local/lm/text
   ngram-count -wbdiscount -text data/local/lm/text -lm data/local/lm/srilm.3g.gz
   ngram-count -wbdiscount -order 2 -text data/local/lm/text -lm data/local/lm/srilm.2g.gz
@@ -152,7 +147,7 @@ if [ $stage -le 5 ]; then
      --boost-silence 0.5 --nj 4 --cmd "$train_cmd" \
      data/train data/lang $expdir/tri4a $expdir/tri4a_ali
 fi
-wait  # wait for decode jobs to finish.
+wait
 
 if [ $stage -le 6 ]; then
     local/nnet2/run_dnn.sh --expdir $expdir --train-stage $train_stage || exit 1;
