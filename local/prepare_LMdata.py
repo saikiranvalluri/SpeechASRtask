@@ -22,8 +22,9 @@ def normalize(utt):
     return utt
 
 for line in basetrxns:
-    textout = normalize(line.strip())
-    LMtext.write(textout + "\n")
+    if not line.strip()=="":
+        textout = normalize(line.strip())
+        LMtext.write(textout + "\n")
 
 basetrxns.close()
 LMtext.close()

@@ -6,9 +6,9 @@ if len(sys.argv) < 4:
     print("USAGE : count_oovs.py <inout file> <lexicon> <oovlistout>")
     sys.exit()
 
-fin = open(sys.argv[1], 'r', encoding="utf-8", errors="ignore")
-fdict=open(sys.argv[2], 'r', encoding="utf-8", errors="ignore")
-oovfile = open(sys.argv[3], 'w', encoding="utf-8", errors="ignore")
+fin = open(sys.argv[1], 'r')
+fdict=open(sys.argv[2], 'r')
+oovfile = open(sys.argv[3], 'w')
 
 lexicon=[]
 for line in fdict:

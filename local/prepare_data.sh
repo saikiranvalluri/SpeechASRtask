@@ -15,7 +15,9 @@ if [ $# -eq 0 ]; then
 fi
 
 cat $srcdatabase/trans/spontaneous/*/*/*/*.txt > data/train_LM_init.txt
-cut -f 2- -d " " $srcdatabase/trans/scripted/script.map | sed "s:\"::g" >> data/train_LM_init.txt
+for i in `seq 1 4`; do
+  cut -f 2- -d " " $srcdatabase/trans/scripted/script.map | sed "s:\"::g" >> data/train_LM_init.txt
+done
 python local/prepare_data_corpus.py $srcdatabase/speech $splitsfilepath $srcdatabase/trans $outputpath
 python local/prepare_LMdata.py data/train_LM_init.txt data/train_LM.txt
 

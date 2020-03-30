@@ -12,7 +12,7 @@
 
 stage=0
 train_stage=-20
-expdir=exp_300pdfs
+expdir=exp_200pdfs
 srclexicon=SBL_SpeechEngineerExercise_Generic/cmudict.0.7a.lc
 srcdata=SBL_SpeechEngineerExercise_Generic/SpeechDataBase
 mfccdir=`pwd`/mfcc
@@ -61,7 +61,7 @@ if [ $stage -le 2 ]; then
   utils/prepare_lang.sh data/local/dict "<unk>" data/local/lang data/lang
   mkdir -p data/local/lm
   cat data/train_LM.txt | sed "s:\[noise\]::g" | \
-	  sed "s:\[sil\]::g" | sed "s:<unk>::g" > data/local/lm/text
+	  sed "s:\[sil\]::g" | sed "s:<[a-z]*>::g" > data/local/lm/text
   ngram-count -wbdiscount -text data/local/lm/text -lm data/local/lm/srilm.3g.gz
   ngram-count -wbdiscount -order 2 -text data/local/lm/text -lm data/local/lm/srilm.2g.gz
   utils/format_lm_sri.sh --srilm-opts "-subset -order 2" \
@@ -95,7 +95,7 @@ if [ $stage -le 3 ]; then
     )&
 
   steps/train_deltas.sh --cmd "$train_cmd" \
-    300 3000 data/train data/lang $expdir/mono0a_ali $expdir/tri2 || exit 1;
+    300 2000 data/train data/lang $expdir/mono0a_ali $expdir/tri2 || exit 1;
 
   (
     utils/mkgraph.sh data/lang_test $expdir/tri2 $expdir/tri2/graph || exit 1;
@@ -114,7 +114,7 @@ if [ $stage -le 4 ]; then
 # Train tri3a, which is LDA+MLLT, on 100k data.
   steps/train_lda_mllt.sh --cmd "$train_cmd" \
    --splice-opts "--left-context=3 --right-context=3" \
-   300 4000 data/train data/lang $expdir/tri2_ali $expdir/tri3a || exit 1;
+   300 2000 data/train data/lang $expdir/tri2_ali $expdir/tri3a || exit 1;
   (
     utils/mkgraph.sh data/lang_test $expdir/tri3a $expdir/tri3a/graph || exit 1;
     steps/decode.sh --nj 2 --cmd "$decode_cmd" --config conf/decode.config \
@@ -132,7 +132,7 @@ if [ $stage -le 5 ]; then
     data/train data/lang $expdir/tri3a $expdir/tri3a_ali || exit 1;
 
   steps/train_sat.sh  --cmd "$train_cmd" \
-    300 5000 data/train data/lang $expdir/tri3a_ali  $expdir/tri4a || exit 1;
+    300 3000 data/train data/lang $expdir/tri3a_ali  $expdir/tri4a || exit 1;
 
   (
     utils/mkgraph.sh data/lang_test $expdir/tri4a $expdir/tri4a/graph
