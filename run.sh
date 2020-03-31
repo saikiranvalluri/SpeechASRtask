@@ -4,7 +4,7 @@
 # E2E recipe for Children's speech ASR
 
 # %WER 30.89 [ 118 / 382, 15 ins, 41 del, 62 sub ] exp_300pdfs/mono0a/decode_dev/wer_17_1.0
-# %WER 97.91 [ 374 / 382, 4 ins, 234 del, 136 sub ] exp_300pdfs/nnet4d_gpu/decode_dev/wer_10_0.0
+# %WER 59.85 [ 407 / 680, 78 ins, 55 del, 274 sub ] exp_300pdfs/tri4a_online/decode/wer_17_0.5
 # %WER 35.08 [ 134 / 382, 14 ins, 49 del, 71 sub ] exp_300pdfs/tri2/decode_dev/wer_17_0.5
 # %WER 42.93 [ 164 / 382, 24 ins, 62 del, 78 sub ] exp_300pdfs/tri3a/decode_dev/wer_17_0.0
 # %WER 28.53 [ 109 / 382, 16 ins, 51 del, 42 sub ] exp_300pdfs/tri4a/decode_dev/wer_16_0.5
